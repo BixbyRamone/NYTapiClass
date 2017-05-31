@@ -2,28 +2,26 @@ $(document).ready(function() {
 
 	$('#search-btn').on('click', function(event) {
 
-		var userSearch = $("#search-term");
- 	 	var recordsNum = $("#number");
-		var startYear = $("#start-year");
-		var endYear = $("#end-year");
-
-		console.log(userSearch)
+		var userSearch = $("#search-term").val();
+ 	 	var recordsNum = $("#number").val();
+		var startYear = $("#start-year").val();
+		var endYear = $("#end-year").val();
 
 		var queryUrl = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
 		queryUrl += '?' + $.param({
 
+          'q': userSearch,
 	      'api-key': "c96d79c3d7be46059b5d4873c11b9b35",
 	      'sort': "newest",
 	      'begin-date': startYear,
 	      'end-date': endYear,
-	      'q': userSearch,
 	      'limit': recordsNum
       });
 
  	 console.log(queryUrl)
 
 		$.ajax({
-			  url: url,
+			  url: queryUrl,
 			  method: 'GET',
 			}).done(function(result) {
 			  console.log(result);
@@ -32,17 +30,19 @@ $(document).ready(function() {
 
 				var nytDiv = $('<div>');
 		        var articles = result.response.docs;
-		        var headline = $('<h2>').text(articles.headline.main);
-		        var author = $('<h2>').text(articles.byline.original);
-		        var date = $('<h2>').text(articles.pub_date);
-		        var webURL = $('<h2>').text(articles.web_url);
+		        var headline = $('<h2>').text(articles[i].headline.main);
+		        var author = $('<p>').text(articles[i].byline.original);
+		        var date = $('<p>').text("Date: " + articles[i].pub_date);
+                var section = $('<p>').text("Section: " + articles[i].section_name);
+		        var webURL = $('<a>').text('READ THE ARTICLE');
+                webURL.attr('href', articles[i].web_url);
 
 		        nytDiv.append(headline);
-
 		        nytDiv.append(author);
 		        nytDiv.append(date);
+                nytDiv.append(section);
 		        nytDiv.append(webURL);
-		        $('#article-display').prepend(nytDiv);
+		        $('#article-display').append(nytDiv);
 		 	}
 
 			}).fail(function(err) {
@@ -54,17 +54,3 @@ $(document).ready(function() {
 		})
 
 });
-
-/*
-headline.main: "title"
-
-byline.original: author
-
-pub_date: "2017-05-31T00:25:22+0000"
-
-section_name : "U.S."
-
-web_url: 
-
-
-*/
